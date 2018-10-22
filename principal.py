@@ -1,24 +1,28 @@
 import boto3
 
-# Get the service resource
-sqs = boto3.resource('sqs')
+# Create SQS client
+sqs = boto3.client('sqs')
 
-# Get the queue
-queue = sqs.get_queue_by_name(QueueName='TradeStatus.fifo')
+queue_url = 'https://sqs.us-east-1.amazonaws.com/654012118861/fabian1234'
 
-try:
-    userInput = raw_input("Please enter file name: ")
-except NameError:
-    pass
-
-with open(userInput, 'r') as myfile:
-    data=myfile.read()
-
-response = queue.send_message(
-    MessageBody=data,
-    MessageGroupId='messageGroup1'
+# Send message to SQS queue
+response = sqs.send_message(
+    QueueUrl=queue_url,
+    DelaySeconds=10,
+    MessageAttributes={
+        'Videoid': {
+            'DataType': 'String',
+            'StringValue': 'videoXXXX'
+        },
+        'rutavideo': {
+            'DataType': 'String',
+            'StringValue': 'ruta s3'
+        }
+    },
+    MessageBody=(
+        'Information about current NY Times fiction bestseller for '
+        'week of 12/11/2016.'
+    )
 )
 
-# The response is NOT a resource, but gives you a message ID and MD5
-print(response.get('MessageId'))
-print(response.get('MD5OfMessageBody'))
+print(response['MessageId'])
