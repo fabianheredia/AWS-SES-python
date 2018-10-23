@@ -1,11 +1,11 @@
 import boto3
 
-# Create SQS client
+# crear sqs cliente
 sqs = boto3.client('sqs')
 
-queue_url = 'https://sqs.us-east-1.amazonaws.com/654012118861/fabian1234'
+queue_url = '' #url de servicio sqs
 
-# Send message to SQS queue
+# enviar cola
 response = sqs.send_message(
     QueueUrl=queue_url,
     DelaySeconds=10,

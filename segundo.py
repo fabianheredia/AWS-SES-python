@@ -1,15 +1,30 @@
 import boto3
 
-# Get the service resource
-sqs = boto3.resource('sqs')
+# crear sqs cliente
+sqs = boto3.client('sqs')
 
-# Get the queue
-queue = sqs.get_queue_by_name(QueueName='TradeStatus.fifo')
+queue_url = '' # url del servicio sqs
 
-# Process messages by printing out body
-for message in queue.receive_messages():
-    # Print out the body of the message
-    print('Hello, {0}'.format(message.body))
+# recibe mensaje de SQS
+response = sqs.receive_message(
+    QueueUrl=queue_url,
+    AttributeNames=[
+        'SentTimestamp'
+    ],
+    MaxNumberOfMessages=1,
+    MessageAttributeNames=[
+        'All'
+    ],
+    VisibilityTimeout=0,
+    WaitTimeSeconds=0
+)
 
-    # Let the queue know that the message is processed
-    message.delete()
+message = response['Messages'][0]
+receipt_handle = message['ReceiptHandle']
+
+# # Delete received message from queue
+# sqs.delete_message(
+#     QueueUrl=queue_url,
+#     ReceiptHandle=receipt_handle
+# )
+print('Received and deleted message: %s' % message)
